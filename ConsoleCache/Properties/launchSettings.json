@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "practicing": {
+    "ConsoleCache": {
       "commandName": "Project"
     },
     "Docker": {

@@ -13,13 +13,13 @@ namespace ConsoleCache.Configuration
     {
         public static IServiceProvider ServiceProvider { get; private set; }
 
-        public static void Configure()
+        public static void Configure(int cacheCapacity)
         {
             var host = new HostBuilder()
                 .ConfigureServices((_, services) =>
                 {
                     services.AddHttpClient()
-                            .AddScoped<ICache, LruCache>()
+                            .AddSingleton<ICache>(new LruCache(cacheCapacity))
                             .AddScoped<Printer>()
                             .AddScoped<GetCommand>()
                             .AddScoped<PutCommand>()

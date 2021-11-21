@@ -12,18 +12,20 @@ namespace ConsoleCache
     {
         static void Main()
         {
-            DI.Configure();
+            var cacheCapacity = GetCacheCapacity();
+
+            DI.Configure(cacheCapacity);
 
             do
             {
-                Console.Write("Type command: ");
+                Console.Write("Enter command (get | put | print): ");
                 var input = Console.ReadLine().Split(" ");
 
                 (var isInputValid, var commandName, var values) = InputValidator.TryValidateInput(input);
 
                 if (!isInputValid)
                 {
-                    throw new Exception();
+                    throw new Exception("Wrong input");
                 }
 
                 var eventArgs = new CommandReceivedEventArgs(CreateCommand(commandName, values));
@@ -33,6 +35,25 @@ namespace ConsoleCache
                 Console.WriteLine();
 
             } while (!(Console.KeyAvailable && Console.ReadKey(true).Key == ConsoleKey.Escape));
+        }
+
+        private static int GetCacheCapacity()
+        {
+            Console.Write("Enter cache capacity: ");
+
+            if (!int.TryParse(Console.ReadLine(), out var cacheCapacity))
+            {
+                throw new Exception("Cache capacity must be an integer value");
+            }
+
+            if (cacheCapacity <= 0)
+            {
+                throw new Exception("Cache capacity must be greater than 0");
+            }
+
+            Console.WriteLine();
+
+            return cacheCapacity;
         }
 
         private static ICommand CreateCommand(string name, string[] values)

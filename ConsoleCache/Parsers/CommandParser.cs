@@ -48,12 +48,12 @@ namespace ConsoleCache.Parsers
         {
             if (!TryCreateCommand(name, values, out var command))
             {
-                throw new Exception();
+                throw new Exception("Error while creating command");
             }
 
             if (values != null && command.Model.NumberOfValues != values.Length)
             {
-                throw new Exception();
+                throw new Exception("Wrong set of values for this command");
             }
 
             return command;
