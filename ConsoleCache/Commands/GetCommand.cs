@@ -11,7 +11,7 @@ namespace ConsoleCache.Commands
         private readonly CommandLineEventsPublisher _eventsPublisher;
         private readonly Printer _printer;
 
-      public CommandModel Model { get; set; } = new CommandModel("get", 1);
+        public CommandModel Model { get; set; } = new CommandModel("get", 1);
 
         public GetCommand(ICache lruCache, CommandLineEventsPublisher eventsPublisher, Printer printer)
         {
