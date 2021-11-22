@@ -7,4 +7,9 @@ Examples of available commands:
 - put 2 2 (adds a key value pair to cache)
 - print (prints all cached key-value pairs)
 
+Get it up and running with Docker:
+```bash 
+docker build -t console-cache .
+docker run -it console-cache
+```
 [![.NET](https://github.com/lvchkn/ConsoleCache/actions/workflows/dotnet.yml/badge.svg?branch=main)](https://github.com/lvchkn/ConsoleCache/actions/workflows/dotnet.yml)
