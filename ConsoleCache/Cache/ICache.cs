@@ -1,8 +1,8 @@
-﻿namespace ConsoleCache.Cache
+﻿namespace ConsoleCache.Cache;
+
+public interface ICache
 {
-    public interface ICache
-    {
-        public void Put(int key, int value);
-        public int Get(int key);
-    }
+    void Set(int key, int value);
+    int Get(int key);
+    void PrintPairs();
 }

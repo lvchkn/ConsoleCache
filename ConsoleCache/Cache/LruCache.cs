@@ -1,80 +1,81 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace ConsoleCache.Cache;
 
-namespace ConsoleCache.Cache
+public class LruCache : ICache
 {
-    public class LruCache : ICache
+    private record CachedValue
     {
-        class CachedValue
-        {
-            public int Key { get; set; }
-            public int Value { get; set; }
+        public required int Key { get; set; }
+        public required int Value { get; set; }
+    }
 
-            public CachedValue(int key, int value)
-            {
-                Key = key;
-                Value = value;
-            }
+    private readonly Dictionary<int, CachedValue> _cache;
+    private readonly LinkedList<CachedValue> _queue;
+
+    public static int Capacity { get; private set; }
+
+    public LruCache(int capacity = 2)
+    {
+        Capacity = capacity;
+        _cache = new Dictionary<int, CachedValue>(Capacity);
+        _queue = new LinkedList<CachedValue>();
+    }
+
+    public int Get(int key)
+    {
+        if (!_cache.ContainsKey(key))
+        {
+            return -1;
         }
 
-        private readonly Dictionary<int, CachedValue> _cache;
-        private readonly LinkedList<CachedValue> _queue;
+        var cachedValue = _cache[key];
+        _queue.Remove(cachedValue);
+        _queue.AddFirst(cachedValue);
 
-        public static int Capacity { get; private set; }
+        return _cache[key].Value;
+    }
 
-        public LruCache(int capacity = 2)
+    public void Set(int key, int value)
+    {
+        if (_cache.ContainsKey(key))
         {
-            Capacity = capacity;
-            _cache = new Dictionary<int, CachedValue>(capacity);
-            _queue = new LinkedList<CachedValue>();
+            _cache[key] = _cache[key] with
+            {
+                Key = key,
+                Value = value,
+            };
+
+            _queue.Remove(_cache[key]);
+            _queue.AddFirst(_cache[key]);
+
+            return;
         }
 
-        public int Get(int key)
+        if (_cache.Count >= Capacity && _queue.Last is not null)
         {
-            if (!_cache.ContainsKey(key))
-            {
-                return -1;
-            }
-
-            var cachedValue = _cache[key];
-            _queue.Remove(cachedValue);
-            _queue.AddFirst(cachedValue);
-
-            return _cache[key].Value;
+            _cache.Remove(_queue.Last.Value.Key);
+            _queue.RemoveLast();
         }
 
-        public void Put(int key, int value)
+        var cachedValue = new CachedValue 
         {
-            if (_cache.ContainsKey(key))
-            {
-                _cache[key].Key = key;
-                _cache[key].Value = value;
-                _queue.Remove(_cache[key]);
-                _queue.AddFirst(_cache[key]);
-                return;
-            }
-            
-            if (_cache.Count >= Capacity)
-            {
-                _cache.Remove(_queue.Last.Value.Key);
-                _queue.RemoveLast();
-            }
+            Key = key,
+            Value = value,
+        };
 
-            var cachedValue = new CachedValue(key, value);
-            _cache.Add(key, cachedValue);
-            _queue.AddFirst(cachedValue);
-        }
+        _cache.Add(key, cachedValue);
+        _queue.AddFirst(cachedValue);
+    }
 
-        public void PrintCachedKeyValuePairs()
+    public void PrintPairs()
+    {
+        var i = 1;
+        Console.WriteLine($"Cache count is {_cache.Count}");
+        Console.WriteLine();
+
+        foreach (var (Key, Value) in _cache)
         {
-            var i = 0;
-
-            foreach (KeyValuePair<int, CachedValue> kvp in _cache)
-            {
-                Console.WriteLine($"Cached key #{i} = {kvp.Key}");
-                Console.WriteLine($"Cached value #{i++} = {kvp.Value.Value}");
-                Console.WriteLine();
-            }
+            Console.WriteLine($"Pair #{i}: Key = {Key}, Value = {Value.Value}");
+            Console.WriteLine();
         }
     }
 }

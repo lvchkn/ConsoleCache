@@ -1,65 +1,43 @@
-﻿using System;
-using Microsoft.Extensions.DependencyInjection;
-using ConsoleCache.Commands;
-using ConsoleCache.Parsers;
-using ConsoleCache.Validators;
-using ConsoleCache.Configuration;
-using ConsoleCache.Runners;
+﻿using ConsoleCache.Cache;
 
-namespace ConsoleCache
+Console.Write("Enter cache capacity: ");
+
+if (!uint.TryParse(Console.ReadLine(), out var cacheCapacity))
 {
-    class Program
+    Console.WriteLine();
+    throw new ArgumentOutOfRangeException("Cache capacity must be a positive integer");
+};
+
+var cache = new LruCache(Convert.ToInt32(cacheCapacity));
+
+do 
+{
+    Console.Write("Enter a command (get | set | print): ");
+
+    var command = Console.ReadLine()?.Split(" ");
+
+    if (command?.Length == 2 
+        && command[0].ToLowerInvariant() == "get" 
+        && int.TryParse(command[1], out var keyToGet))
     {
-        static void Main()
-        {
-            var cacheCapacity = GetCacheCapacity();
+        Console.WriteLine($"Retrieved {cache.Get(keyToGet)} from cache");
+        Console.WriteLine();
+    }
+    else if (command?.Length == 3 
+        && command[0].ToLowerInvariant() == "set" 
+        && int.TryParse(command[1], out var keyToSet)
+        && int.TryParse(command[2], out var value))
+    {
+        cache.Set(keyToSet, value);
+        Console.WriteLine($"Set {keyToSet} with {value} to cache");
+        Console.WriteLine();
+    }
+    else if (command?.Length == 1 
+        && command[0].ToLowerInvariant() == "print") 
+    {
+        cache.PrintPairs();
+    }
+    else throw new ArgumentException("You passed some unexpected arguments to this command");
 
-            DI.Configure(cacheCapacity);
-
-            do
-            {
-                Console.Write("Enter command (get | put | print): ");
-                var input = Console.ReadLine().Split(" ");
-
-                (var isInputValid, var commandName, var values) = InputValidator.TryValidateInput(input);
-
-                if (!isInputValid)
-                {
-                    throw new Exception("Wrong input");
-                }
-
-                var eventArgs = new CommandReceivedEventArgs(CreateCommand(commandName, values));
-
-                DI.ServiceProvider.GetRequiredService<CommandLineEventsPublisher>().OnCommandReceived(eventArgs);
-
-                Console.WriteLine();
-
-            } while (!(Console.KeyAvailable && Console.ReadKey(true).Key == ConsoleKey.Escape));
-        }
-
-        private static int GetCacheCapacity()
-        {
-            Console.Write("Enter cache capacity: ");
-
-            if (!int.TryParse(Console.ReadLine(), out var cacheCapacity))
-            {
-                throw new Exception("Cache capacity must be an integer value");
-            }
-
-            if (cacheCapacity <= 0)
-            {
-                throw new Exception("Cache capacity must be greater than 0");
-            }
-
-            Console.WriteLine();
-
-            return cacheCapacity;
-        }
-
-        private static ICommand CreateCommand(string name, string[] values)
-        {
-            return DI.ServiceProvider.GetRequiredService<CommandParser>().CreateCommand(name, values);
-        }
-    }   
 }
-
+while (!(Console.KeyAvailable && Console.ReadKey(true).Key == ConsoleKey.Escape));
