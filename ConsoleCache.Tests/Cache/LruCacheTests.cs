@@ -15,7 +15,7 @@ public class LruCacheTests
         var value = lruCache.Get(1);
 
         // Assert
-        Assert.Equal(value, -1);
+        Assert.Equal(-1, value);
     }
 
     [Fact]
@@ -32,6 +32,6 @@ public class LruCacheTests
         var value = lruCache.Get(1);
 
         // Assert
-        Assert.Equal(value, -1);
+        Assert.Equal(-1, value);
     }
 }
