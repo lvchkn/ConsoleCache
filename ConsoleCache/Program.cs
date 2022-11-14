@@ -29,7 +29,7 @@ do
         && int.TryParse(command[2], out var value))
     {
         cache.Set(keyToSet, value);
-        Console.WriteLine($"Set {keyToSet} with {value} to cache");
+        Console.WriteLine($"Set key {keyToSet} with value {value} to cache");
         Console.WriteLine();
     }
     else if (command?.Length == 1 
@@ -39,5 +39,8 @@ do
     }
     else throw new ArgumentException("You passed some unexpected arguments to this command");
 
+    Console.WriteLine("Press ESC to exit. Press any key to continue");
+    Console.WriteLine();
+
 }
-while (!(Console.KeyAvailable && Console.ReadKey(true).Key == ConsoleKey.Escape));
+while (Console.ReadKey(true).Key != ConsoleKey.Escape);
