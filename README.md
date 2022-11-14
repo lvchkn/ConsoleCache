@@ -1,5 +1,5 @@
 # ConsoleCache
-[![.NET](https://github.com/lvchkn/ConsoleCache/actions/workflows/dotnet.yml/badge.svg?branch=main)](https://github.com/lvchkn/ConsoleCache/actions/workflows/build-and-test.yml)
+[![.NET](https://github.com/lvchkn/ConsoleCache/actions/workflows/build-and-test.yml/badge.svg?branch=main)](https://github.com/lvchkn/ConsoleCache/actions/workflows/build-and-test.yml)
 
 Simple console-based LRU cache implementation.
 
